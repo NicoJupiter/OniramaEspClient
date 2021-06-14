@@ -1,21 +1,18 @@
 #include <Arduino.h>
 #include "bleEsp.h"
 
-
 BleEsp bleEsp;
 
-const int tempPin = 4;     //analog input pin constant<br>
-int tempVal;    // temperature sensor raw readings
-float volts;    // variable for storing voltage 
-float temp;     // actual temperature variable
-
+const int tempPin = 4;     //analog input du capteur de temperature
+int tempVal;  
+float volts; 
+float temp; 
 
 void setup()
 {
   Serial.begin(115200);
   Serial.println("Starting Arduino BLE Client application...");
   bleEsp.initBle();
-
 }
 
 void loop()

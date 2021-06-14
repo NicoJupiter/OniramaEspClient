@@ -1,10 +1,11 @@
 #include "bleEsp.h"
 #include "BLEDevice.h"
 
-/* Specify the Service UUID of Server */
+//uuid du serveur
 static BLEUUID serviceUUID("19B10000-E8F2-537E-4F6C-D104768A1214");
 
-static BLEUUID    charUUID("19B10001-E8F2-537E-4F6C-D104768A1214");
+//uuid characteristic temperature du serveur
+static BLEUUID tempCharUUID("19B10001-E8F2-537E-4F6C-D104768A1214");
 
 static boolean doConnect = false;
 static boolean connected = false;
@@ -30,14 +31,14 @@ class MyClientCallback : public BLEClientCallbacks
 //ajout d'un callback pour l'advertise
 class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks
 {
- /* Called for each advertising BLE server. */
+  //appeller à chaque résultat d'un scan
   void onResult(BLEAdvertisedDevice advertisedDevice)
   {
     Serial.print("BLE Advertised Device found: ");
     Serial.println(advertisedDevice.getName().c_str());
 
 
-    /* Check si le device scaner correspond à ce que l'on cherche */
+    /* Check si le device scanné correspond à ce que l'on cherche */
     if (advertisedDevice.haveServiceUUID() && advertisedDevice.isAdvertisingService(serviceUUID))
     {
         Serial.println("!!!!!!characteristic and service foud!!!!!!!!!!");
@@ -60,6 +61,7 @@ void BleEsp::initBle() {
      BLEDevice::init("ESP32-BLE-Client");
     BLEScan* pBLEScan = BLEDevice::getScan();
   pBLEScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks());
+  //interval entre chaque scan
   pBLEScan->setInterval(1349);
   pBLEScan->setWindow(449);
   pBLEScan->setActiveScan(true);
@@ -90,17 +92,18 @@ bool BleEsp::connectToServer() {
 
 
   //récupération characteristic temperature
-  pRemoteTempCharacteristic = pRemoteService->getCharacteristic(charUUID);
+  pRemoteTempCharacteristic = pRemoteService->getCharacteristic(tempCharUUID);
   if (pRemoteTempCharacteristic == nullptr)
   {
     Serial.print("Failed to find our characteristic UUID: ");
-    Serial.println(charUUID.toString().c_str());
+    Serial.println(tempCharUUID.toString().c_str());
     pClient->disconnect();
     return false;
   }
   Serial.println(" - Found our characteristic");
 
     connected = true;
+    doConnect = false;
     return true;
 }
 
