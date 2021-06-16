@@ -8,10 +8,13 @@ class BleEsp {
     public : 
         BleEsp();
         void initBle();
+        void startScan();
         bool connectToServer();
         void writeTempValue(String value);
         bool getConnected();
         bool getDoConnect();
+        bool getDoScan();
+        bool getSendData();
 };
 
 #endif

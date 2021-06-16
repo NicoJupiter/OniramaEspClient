@@ -26,13 +26,18 @@ void loop()
     }
   }
 
-  if (bleEsp.getConnected()) {
+ if (bleEsp.getConnected()) {
+   if(bleEsp.getSendData()) {
     tempVal = analogRead(tempPin);
     volts = tempVal/1023.0;             // normalize by the maximum temperature raw reading range
     temp = (volts - 0.5) * 100 ;         //calculate temperature celsius from voltage as per the equation found on the sensor spec sheet.
     String newValue = String(temp);
+    Serial.println(newValue);
     bleEsp.writeTempValue(newValue);
-
+   }
+  }
+  if(bleEsp.getDoScan()) {
+    bleEsp.startScan();
   }
   delay(2000);
 }

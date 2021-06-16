@@ -7,10 +7,15 @@ static BLEUUID serviceUUID("19B10000-E8F2-537E-4F6C-D104768A1214");
 //uuid characteristic temperature du serveur
 static BLEUUID tempCharUUID("19B10001-E8F2-537E-4F6C-D104768A1214");
 
+static BLEUUID notifyCharUUID("19B10003-E8F2-537E-4F6C-D104768A1214");
+
+
 static boolean doConnect = false;
 static boolean connected = false;
 static boolean doScan = false;
+bool sendData = false;
 static BLERemoteCharacteristic* pRemoteTempCharacteristic;
+static BLERemoteCharacteristic* pRemoteNotifyCharacteristic;
 static BLEAdvertisedDevice* myDevice;
 
 //ajout de callback pour le ble Client
@@ -23,10 +28,19 @@ class MyClientCallback : public BLEClientCallbacks
 
   void onDisconnect(BLEClient* pclient)
   {
+    doScan = true;
     connected = false;
     Serial.println("onDisconnect");
   }
 };
+
+static void notifyCallback(
+  BLERemoteCharacteristic* pBLERemoteCharacteristic,
+  uint8_t* pData,
+  size_t length,
+  bool isNotify) {
+    sendData = true;
+}
 
 //ajout d'un callback pour l'advertise
 class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks
@@ -45,7 +59,6 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks
       BLEDevice::getScan()->stop();
       myDevice = new BLEAdvertisedDevice(advertisedDevice);
       doConnect = true;
-      doScan = true;
 
     }
   }
@@ -58,14 +71,19 @@ BleEsp::BleEsp() {
 }
 
 void BleEsp::initBle() {
-     BLEDevice::init("ESP32-BLE-Client");
-    BLEScan* pBLEScan = BLEDevice::getScan();
+  BLEDevice::init("ESP32-BLE-Client");
+  BLEScan* pBLEScan = BLEDevice::getScan();
   pBLEScan->setAdvertisedDeviceCallbacks(new MyAdvertisedDeviceCallbacks());
   //interval entre chaque scan
   pBLEScan->setInterval(1349);
   pBLEScan->setWindow(449);
   pBLEScan->setActiveScan(true);
   pBLEScan->start(5, false);
+}
+
+void BleEsp::startScan() {
+  BLEDevice::getScan()->start(5, false);
+  doScan = false;
 }
 
 bool BleEsp::connectToServer() {
@@ -100,6 +118,19 @@ bool BleEsp::connectToServer() {
     pClient->disconnect();
     return false;
   }
+
+   pRemoteNotifyCharacteristic = pRemoteService->getCharacteristic(notifyCharUUID);
+  if (pRemoteNotifyCharacteristic == nullptr)
+  {
+    Serial.print("Failed to find our notify characteristic UUID: ");
+    Serial.println(notifyCharUUID.toString().c_str());
+    pClient->disconnect();
+    return false;
+  }
+
+   if(pRemoteNotifyCharacteristic->canNotify())
+      pRemoteNotifyCharacteristic->registerForNotify(notifyCallback);
+
   Serial.println(" - Found our characteristic");
 
     connected = true;
@@ -109,6 +140,7 @@ bool BleEsp::connectToServer() {
 
 void BleEsp::writeTempValue(String value) {
      pRemoteTempCharacteristic->writeValue(value.c_str(), value.length());
+     sendData = false;
 }
 
 bool BleEsp::getConnected() {
@@ -117,4 +149,12 @@ bool BleEsp::getConnected() {
 
 bool BleEsp::getDoConnect() {
     return doConnect;
+}
+
+bool BleEsp::getDoScan() {
+  return doScan;
+}
+
+bool BleEsp::getSendData() {
+  return sendData;
 }
