@@ -37,7 +37,8 @@ void loop()
    }
   }
   if(bleEsp.getDoScan()) {
-    bleEsp.startScan();
+    ESP.restart();
+    //bleEsp.startScan();
   }
   delay(2000);
 }
