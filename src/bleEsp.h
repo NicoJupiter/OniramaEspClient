@@ -10,7 +10,7 @@ class BleEsp {
         void initBle();
         void startScan();
         bool connectToServer();
-        void writeTempValue(String value);
+        void writeSensorValue(String value);
         bool getConnected();
         bool getDoConnect();
         bool getDoScan();

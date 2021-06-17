@@ -4,8 +4,8 @@
 //uuid du serveur
 static BLEUUID serviceUUID("19B10000-E8F2-537E-4F6C-D104768A1214");
 
-//uuid characteristic temperature du serveur
-static BLEUUID tempCharUUID("19B10001-E8F2-537E-4F6C-D104768A1214");
+//uuid characteristic sensor du serveur
+static BLEUUID sensorCharUUID("19B10001-E8F2-537E-4F6C-D104768A1214");
 
 static BLEUUID notifyCharUUID("19B10003-E8F2-537E-4F6C-D104768A1214");
 
@@ -14,7 +14,7 @@ static boolean doConnect = false;
 static boolean connected = false;
 static boolean doScan = false;
 bool sendData = false;
-static BLERemoteCharacteristic* pRemoteTempCharacteristic;
+static BLERemoteCharacteristic* pRemoteSensorCharacteristic;
 static BLERemoteCharacteristic* pRemoteNotifyCharacteristic;
 static BLEAdvertisedDevice* myDevice;
 
@@ -109,12 +109,12 @@ bool BleEsp::connectToServer() {
   Serial.println(" - Found our service");
 
 
-  //récupération characteristic temperature
-  pRemoteTempCharacteristic = pRemoteService->getCharacteristic(tempCharUUID);
-  if (pRemoteTempCharacteristic == nullptr)
+  //récupération characteristic sensor
+  pRemoteSensorCharacteristic = pRemoteService->getCharacteristic(sensorCharUUID);
+  if (pRemoteSensorCharacteristic == nullptr)
   {
     Serial.print("Failed to find our characteristic UUID: ");
-    Serial.println(tempCharUUID.toString().c_str());
+    Serial.println(sensorCharUUID.toString().c_str());
     pClient->disconnect();
     return false;
   }
@@ -138,8 +138,8 @@ bool BleEsp::connectToServer() {
     return true;
 }
 
-void BleEsp::writeTempValue(String value) {
-     pRemoteTempCharacteristic->writeValue(value.c_str(), value.length());
+void BleEsp::writeSensorValue(String value) {
+     pRemoteSensorCharacteristic->writeValue(value.c_str(), value.length());
      sendData = false;
 }
 

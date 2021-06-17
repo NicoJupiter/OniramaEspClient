@@ -1,12 +1,11 @@
 #include <Arduino.h>
 #include "bleEsp.h"
+#include "DFRobot_Heartrate.h"
+    
+DFRobot_Heartrate heartrate(DIGITAL_MODE); ///< ANALOG_MODE or DIGITAL_MODE
 
 BleEsp bleEsp;
-
-const int tempPin = 4;     //analog input du capteur de temperature
-int tempVal;  
-float volts; 
-float temp; 
+const int heartPin = 13;
 
 void setup()
 {
@@ -17,7 +16,7 @@ void setup()
 
 void loop()
 {
-
+ 
   if (bleEsp.getDoConnect()) {
     if (bleEsp.connectToServer()) {
       Serial.println("We are now connected to the BLE Server.");
@@ -28,17 +27,20 @@ void loop()
 
  if (bleEsp.getConnected()) {
    if(bleEsp.getSendData()) {
-    tempVal = analogRead(tempPin);
-    volts = tempVal/1023.0;             // normalize by the maximum temperature raw reading range
-    temp = (volts - 0.5) * 100 ;         //calculate temperature celsius from voltage as per the equation found on the sensor spec sheet.
-    String newValue = String(temp);
-    Serial.println(newValue);
-    bleEsp.writeTempValue(newValue);
+      uint8_t rateValue;
+ 
+      heartrate.getValue(heartPin); ///< A1 foot sampled values
+      rateValue = heartrate.getRate(); ///< Get heart rate value 
+      if(rateValue)  {
+        Serial.println("----Hearth rate-----");
+        Serial.println(rateValue);
+        bleEsp.writeSensorValue(String(rateValue));
+      }
    }
   }
   if(bleEsp.getDoScan()) {
-    ESP.restart();
-    //bleEsp.startScan();
+    //ESP.restart();
+    bleEsp.startScan();
   }
-  delay(2000);
+  delay(200);
 }
