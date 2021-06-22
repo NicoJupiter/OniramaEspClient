@@ -78,11 +78,11 @@ void BleEsp::initBle() {
   pBLEScan->setInterval(1349);
   pBLEScan->setWindow(449);
   pBLEScan->setActiveScan(true);
-  pBLEScan->start(30, false);
+  pBLEScan->start(200, false);
 }
 
 void BleEsp::startScan() {
-  BLEDevice::getScan()->start(30, false);
+  BLEDevice::getScan()->start(200, false);
   doScan = false;
 }
 

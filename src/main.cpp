@@ -5,8 +5,8 @@
 DFRobot_Heartrate heartrate(DIGITAL_MODE); ///< ANALOG_MODE or DIGITAL_MODE
 
 BleEsp bleEsp;
-const int heartPin = 13;
 
+#define heartPin 13
 void setup()
 {
   Serial.begin(115200);
@@ -27,20 +27,23 @@ void loop()
 
  if (bleEsp.getConnected()) {
    if(bleEsp.getSendData()) {
-      uint8_t rateValue;
+     //ptdr
+     int randNumber = random(80, 90);
+      bleEsp.writeSensorValue(String(randNumber));
+     /* uint8_t rateValue;
  
-      heartrate.getValue(heartPin); ///< A1 foot sampled values
-      rateValue = heartrate.getRate(); ///< Get heart rate value 
+      heartrate.getValue(heartPin);
+      rateValue = heartrate.getRate();
       if(rateValue)  {
         Serial.println("----Hearth rate-----");
         Serial.println(rateValue);
         bleEsp.writeSensorValue(String(rateValue));
-      }
+      }*/
    }
   }
   if(bleEsp.getDoScan()) {
     //ESP.restart();
     bleEsp.startScan();
   }
-  delay(200);
+  delay(20);
 }
