@@ -27,7 +27,7 @@ void loop()
 
  if (bleEsp.getConnected()) {
    if(bleEsp.getSendData()) {
-     //ptdr
+     
      int randNumber = random(80, 90);
       bleEsp.writeSensorValue(String(randNumber));
      /* uint8_t rateValue;
