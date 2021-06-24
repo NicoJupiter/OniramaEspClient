@@ -1,49 +1,51 @@
 #include <Arduino.h>
 #include "bleEsp.h"
+#include "nimBleEsp.h"
 #include "DFRobot_Heartrate.h"
     
 DFRobot_Heartrate heartrate(DIGITAL_MODE); ///< ANALOG_MODE or DIGITAL_MODE
 
-BleEsp bleEsp;
+//BleEsp bleEsp;
+NimBleEsp nimBleEsp;
 
 #define heartPin 13
 void setup()
 {
   Serial.begin(115200);
   Serial.println("Starting Arduino BLE Client application...");
-  bleEsp.initBle();
+  //bleEsp.initBle();
+  nimBleEsp.initBle();
 }
 
 void loop()
 {
- 
-  if (bleEsp.getDoConnect()) {
-    if (bleEsp.connectToServer()) {
+
+  if(nimBleEsp.getDoConnect()) {
+    if(nimBleEsp.connectToServer())  {
       Serial.println("We are now connected to the BLE Server.");
     } else {
       Serial.println("Failed to connect to server");
     }
+   // NimBLEDevice::getScan()->start(scanTime,scanEndedCB);
   }
 
- if (bleEsp.getConnected()) {
-   if(bleEsp.getSendData()) {
-     
-     int randNumber = random(80, 90);
-      bleEsp.writeSensorValue(String(randNumber));
-     /* uint8_t rateValue;
- 
+if(nimBleEsp.getConnected()) {
+  if(nimBleEsp.getSendData()) {
+      int randNumber = random(80, 90);
+      nimBleEsp.writeCardiacValue(String(randNumber));
+      /*uint8_t rateValue;
+  
       heartrate.getValue(heartPin);
       rateValue = heartrate.getRate();
       if(rateValue)  {
         Serial.println("----Hearth rate-----");
         Serial.println(rateValue);
-        bleEsp.writeSensorValue(String(rateValue));
+        nimBleEsp.writeCardiacValue(String(rateValue));
       }*/
-   }
+    }
   }
-  if(bleEsp.getDoScan()) {
-    //ESP.restart();
-    bleEsp.startScan();
-  }
-  delay(20);
+  
+
+  delay(2000);
+  
 }
