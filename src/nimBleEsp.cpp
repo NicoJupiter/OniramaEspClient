@@ -192,7 +192,7 @@ void NimBleEsp::writeCardiacValue(String value) {
     
     if(pNinRemoteSensorChr->canWrite()) {
         Serial.println("writing");
-        pNinRemoteSensorChr->writeValue("40");
+        pNinRemoteSensorChr->writeValue(value);
         nimSendData = false;
     } else {
         Serial.println("Cant write");

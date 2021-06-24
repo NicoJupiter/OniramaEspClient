@@ -33,7 +33,7 @@ if(nimBleEsp.getConnected()) {
   if(nimBleEsp.getSendData()) {
       int randNumber = random(80, 90);
       nimBleEsp.writeCardiacValue(String(randNumber));
-      /*uint8_t rateValue;
+     /* uint8_t rateValue;
   
       heartrate.getValue(heartPin);
       rateValue = heartrate.getRate();
@@ -46,6 +46,6 @@ if(nimBleEsp.getConnected()) {
   }
   
 
-  delay(2000);
+  delay(20);
   
 }
